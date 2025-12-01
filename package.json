@@ -1,0 +1,49 @@
+{
+  "name": "tampermonkey-scripts",
+  "version": "1.0.0",
+  "description": "个人Tampermonkey用户脚本集合",
+  "author": "shangxueink",
+  "license": "MIT",
+  "keywords": [
+    "tampermonkey",
+    "userscript",
+    "bilibili",
+    "miyoushe",
+    "koishi"
+  ],
+  "homepage": "https://github.com/koakuuma/tampermonkey-scripts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koakuuma/tampermonkey-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koakuuma/tampermonkey-scripts/issues"
+  },
+  "scripts": {
+    "serve": "webpack serve --mode=development",
+    "dev": "webpack --mode=development --watch --progress",
+    "build": "webpack --mode=production --progress"
+  },
+  "dependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "semver": "^7.7.3",
+    "webpack": "^5.103.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-typescript": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "core-js": "^3.39.0",
+    "css-loader": "^7.1.2",
+    "postcss": "^8.4.49",
+    "postcss-loader": "^8.1.1",
+    "sass": "^1.83.0",
+    "sass-loader": "^16.0.3",
+    "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.11",
+    "typescript": "^5.7.2",
+    "webpack-dev-server": "^5.2.0"
+  }
+}
