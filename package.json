@@ -11,13 +11,13 @@
     "miyoushe",
     "koishi"
   ],
-  "homepage": "https://github.com/koakuuma/tampermonkey-scripts#readme",
+  "homepage": "https://github.com/koakuuma/tampermonkey-scripts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/koakuuma/tampermonkey-scripts.git"
   },
   "bugs": {
-    "url": "https://github.com/koakuuma/tampermonkey-scripts/issues"
+    "url": "https://github.com/koakuuma/tampermonkey-scripts/issues/new/choose"
   },
   "scripts": {
     "serve": "webpack serve --mode=development",
