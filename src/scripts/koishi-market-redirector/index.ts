@@ -65,7 +65,7 @@ interface FetchResult
     sourceUrl: normalizeUrl('registry.koishi.chat/index.json'),
     mirrorUrls: [
       { url: "https://gitee.com/shangxueink/koishi-registry-aggregator/raw/gh-pages/market.json", useProxy: true },
-      { url: "https://shangxueink.github.io/koishi-registry-aggregator/market.json", useProxy: false },
+      { url: "https://koishi-shangxue-plugins.github.io/koishi-registry-aggregator/market.json", useProxy: false },
       { url: 'https://koishi-registry.yumetsuki.moe/index.json', useProxy: false },
       { url: "https://cdn.jsdmirror.com/gh/shangxueink/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },
       { url: "https://cdn.jsdelivr.net/gh/shangxueink/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },

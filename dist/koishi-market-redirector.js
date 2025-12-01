@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Koishi Market Registry Redirector
 // @namespace    https://github.com/shangxueink
-// @version      4.1
+// @version      4.2
 // @description  将 Koishi 市场注册表请求重定向到多个备用镜像源，支持自动重试、单独配置每个镜像源的代理请求解决CORS问题，并修复时间显示问题，镜像地址可点击复制，增加返回顶部按钮。
 // @author       shangxueink
 // @license      MIT
@@ -3318,7 +3318,7 @@ var __webpack_exports__ = {};
       url: "https://gitee.com/shangxueink/koishi-registry-aggregator/raw/gh-pages/market.json",
       useProxy: true
     }, {
-      url: "https://shangxueink.github.io/koishi-registry-aggregator/market.json",
+      url: "https://koishi-shangxue-plugins.github.io/koishi-registry-aggregator/market.json",
       useProxy: false
     }, {
       url: 'https://koishi-registry.yumetsuki.moe/index.json',

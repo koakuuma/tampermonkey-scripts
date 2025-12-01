@@ -2,7 +2,7 @@ module.exports = (isProd) => `// ==UserScript==
 // @name         Gateway Auto Login
 // @name:zh-CN   网关自动登录
 // @namespace    https://github.com/shangxueink
-// @version      3.1
+// @version      3.2
 // @description  Quickly login to 172.19.0.1 gateway
 // @description:zh-CN 快速自动登录 172.19.0.1 网关
 // @author       shangxueink

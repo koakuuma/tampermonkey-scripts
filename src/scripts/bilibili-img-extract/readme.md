@@ -44,7 +44,7 @@
 
 **配套表情包下载工具：**
 
-为了更方便地下载表情包，我们还提供了一个配套的表情包下载页面 -> [MemeDownloader](https://shangxueink.github.io/koishi-shangxue-apps/MemeDownloader.html)。 
+为了更方便地下载表情包，我们还提供了一个配套的表情包下载页面 -> [MemeDownloader](https://koishi-shangxue-plugins.github.io/koishi-shangxue-apps/MemeDownloader.html)。 
 
 你可以使用此页面配合提取的链接进行批量下载。
 

@@ -2,12 +2,6 @@
 
 个人Tampermonkey用户脚本集合，使用TypeScript开发，通过Webpack构建。
 
-## 📦 包含的脚本
-
-- 米游社帖子图片链接提取
-- Bilibili专栏原图链接提取2024改版
-- Koishi Market Registry Redirector
-
 ## 🚀 快速开始
 
 ### 安装依赖
@@ -40,4 +34,4 @@ npm run build
 
 ## 📮 反馈
 
-如有问题或建议，请在 [GitHub Issues](https://github.com/shangxueink/tampermonkey-scripts/issues) 中提出。
+如有问题或建议，请在 [GitHub Issues](https://github.com/koakuuma/tampermonkey-scripts/issues) 中提出。
