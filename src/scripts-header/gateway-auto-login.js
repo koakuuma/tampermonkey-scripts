@@ -1,0 +1,19 @@
+module.exports = (isProd) => `// ==UserScript==
+// @name         Gateway Auto Login
+// @name:zh-CN   网关自动登录
+// @namespace    https://github.com/shangxueink
+// @version      2.6
+// @description  Quickly login to 172.19.0.1 gateway
+// @description:zh-CN 快速自动登录 172.19.0.1 网关
+// @author       shangxueink
+// @license      MIT
+// @match        http://172.19.0.1/*
+// @match        http://192.168.255.4/*
+// @grant        none
+// @run-at       document-end
+// @homepageURL  https://github.com/shangxueink/tampermonkey-scripts
+// @supportURL   https://github.com/shangxueink/tampermonkey-scripts/issues
+${isProd ? '// @downloadURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js' : ''}
+${isProd ? '// @updateURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js' : ''}
+// ==/UserScript==
+`;

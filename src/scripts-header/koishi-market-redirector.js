@@ -16,4 +16,4 @@ module.exports = (isProd) => `// ==UserScript==
 ${isProd ? '// @downloadURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/koishi-market-redirector.user.js' : ''}
 ${isProd ? '// @updateURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/koishi-market-redirector.user.js' : ''}
 // ==/UserScript==
-`
+`;

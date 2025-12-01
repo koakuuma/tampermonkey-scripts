@@ -18,4 +18,4 @@ module.exports = (isProd) => `// ==UserScript==
 ${isProd ? '// @downloadURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/bilibili-img-extract.user.js' : ''}
 ${isProd ? '// @updateURL https://github.com/shangxueink/tampermonkey-scripts/raw/main/dist/bilibili-img-extract.user.js' : ''}
 // ==/UserScript==
-`
+`;
