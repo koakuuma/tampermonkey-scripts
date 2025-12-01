@@ -9,6 +9,36 @@ const packageInfo = require('./package.json');
 
 const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
+/** 自动扫描 src/scripts 目录下的所有脚本入口 */
+function getScriptEntries()
+{
+  const scriptsDir = path.join(__dirname, 'src/scripts');
+  const entries = {};
+
+  // 读取 src/scripts 目录
+  if (fs.existsSync(scriptsDir))
+  {
+    const scriptFolders = fs.readdirSync(scriptsDir, { withFileTypes: true });
+
+    scriptFolders.forEach(dirent =>
+    {
+      if (dirent.isDirectory())
+      {
+        const scriptName = dirent.name;
+        const indexPath = path.join(scriptsDir, scriptName, 'index.ts');
+
+        // 检查是否存在 index.ts
+        if (fs.existsSync(indexPath))
+        {
+          entries[scriptName] = `./src/scripts/${scriptName}`;
+        }
+      }
+    });
+  }
+
+  return entries;
+}
+
 /** 获取所有安装的依赖版本 */
 function getPkgDepsVersion()
 {
@@ -38,11 +68,7 @@ function getScriptHeader(filename, argvMode)
 
 module.exports = (env, argv) => ({
   devtool: false,
-  entry: {
-    'miyoushe-img-extract': './src/scripts/miyoushe-img-extract',
-    'bilibili-img-extract': './src/scripts/bilibili-img-extract',
-    'koishi-market-redirector': './src/scripts/koishi-market-redirector',
-  },
+  entry: getScriptEntries(),
   output: {
     path: path.join(__dirname, 'dist'),
     publicPath: '/',

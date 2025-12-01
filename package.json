@@ -22,7 +22,8 @@
   "scripts": {
     "serve": "webpack serve --mode=development",
     "dev": "webpack --mode=development --watch --progress",
-    "build": "webpack --mode=production --progress"
+    "build": "webpack --mode=production --progress",
+    "npx": "tsc --noEmit"
   },
   "dependencies": {
     "clean-webpack-plugin": "^4.0.0",
