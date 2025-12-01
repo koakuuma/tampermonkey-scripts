@@ -1,7 +1,7 @@
 module.exports = (isProd) => `// ==UserScript==
 // @name         米游社帖子图片链接提取
 // @namespace    miyoushe-img-article
-// @version      0.2
+// @version      1.0
 // @description  提取米游社帖子中的图片链接
 // @author       shangxue
 // @match        https://www.miyoushe.com/*
