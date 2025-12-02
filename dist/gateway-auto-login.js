@@ -2,7 +2,7 @@
 // @name         Gateway Auto Login
 // @name:zh-CN   网关自动登录
 // @namespace    https://github.com/shangxueink
-// @version      3.2
+// @version      3.3
 // @description  Quickly login to 172.19.0.1 gateway
 // @description:zh-CN 快速自动登录 172.19.0.1 网关
 // @author       shangxueink
@@ -13,10 +13,9 @@
 // @run-at       document-end
 // @homepageURL  https://github.com/koakuuma/tampermonkey-scripts
 // @supportURL   https://github.com/koakuuma/tampermonkey-scripts/issues
-// @downloadURL https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js
-// @updateURL https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js
+// @downloadURL  https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js
+// @updateURL    https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/gateway-auto-login.user.js
 // ==/UserScript==
-
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

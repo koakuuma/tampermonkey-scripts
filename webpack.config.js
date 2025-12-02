@@ -61,9 +61,53 @@ const depsVersion = getPkgDepsVersion();
 
 function getScriptHeader(filename, argvMode)
 {
-  const filepath = path.join(__dirname, './src/scripts-header', `${filename}.js`);
+  const jsonFilepath = path.join(__dirname, 'src/scripts', filename, 'index.json');
+  const jsFilepath = path.join(__dirname, './src/scripts-header', `${filename}.js`);
   const isProd = argvMode === 'production';
-  return fs.existsSync(filepath) ? require(filepath)(isProd, depsVersion) : '';
+
+  // 优先读取json配置
+  if (fs.existsSync(jsonFilepath))
+  {
+    const headerJson = require(jsonFilepath);
+    const lines = ['// ==UserScript=='];
+    const keyPadding = 12;
+
+    const formatLine = (key, value) => `// @${key.padEnd(keyPadding)} ${value}`;
+
+    for (const key in headerJson)
+    {
+      if (key === 'prod') continue;
+
+      const value = headerJson[key];
+      if (Array.isArray(value))
+      {
+        value.forEach(item => lines.push(formatLine(key, item)));
+      }
+      else
+      {
+        lines.push(formatLine(key, value));
+      }
+    }
+
+    if (isProd && headerJson.prod)
+    {
+      for (const key in headerJson.prod)
+      {
+        lines.push(formatLine(key, headerJson.prod[key]));
+      }
+    }
+
+    lines.push('// ==/UserScript==');
+    return lines.join('\n');
+  }
+
+  // 兼容旧的js配置
+  if (fs.existsSync(jsFilepath))
+  {
+    return require(jsFilepath)(isProd, depsVersion);
+  }
+
+  return '';
 }
 
 module.exports = (env, argv) => ({
