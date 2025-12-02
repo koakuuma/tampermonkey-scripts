@@ -1,9 +1,14 @@
 {
   "name": "tampermonkey-scripts",
   "version": "1.0.0",
+  "private": true,
   "description": "个人Tampermonkey用户脚本集合",
   "author": "shangxueink",
   "license": "MIT",
+  "workspaces": [
+    "src/scripts/*",
+    "src/scripts-header/*"
+  ],
   "keywords": [
     "tampermonkey",
     "userscript",
