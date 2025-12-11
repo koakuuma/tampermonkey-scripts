@@ -167,7 +167,12 @@ module.exports = (env, argv) => ({
     ],
   },
   plugins: [
-    new CleanWebpackPlugin(), // 默认依赖 output path
+    new CleanWebpackPlugin({
+      // 如果指定了特定脚本，只清理该脚本的输出文件
+      cleanOnceBeforeBuildPatterns: process.env.SCRIPT
+        ? [`${process.env.SCRIPT}.js`]
+        : ['**/*'], // 否则清理所有文件
+    }),
     new webpack.BannerPlugin({
       banner: file => getScriptHeader(file.chunk.name, argv.mode),
       raw: true,

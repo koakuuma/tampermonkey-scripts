@@ -1,60 +1,158 @@
 // ASMR音频声道反转脚本
-// 在ASMR网站上添加音频声道反转功能，支持一键切换左右声道
+// 在ASMR网站上添加音频声道反转功能，支持多种声道模式切换
 
 (function ()
 {
   'use strict';
 
-  // 声道反转状态
-  let isChannelSwapped = false;
+  // 声道模式枚举
+  const ChannelMode = {
+    NORMAL: 'normal',      // 正常声道
+    SWAP: 'swap',          // 反转声道
+    LEFT_ONLY: 'left',     // 仅左声道
+    RIGHT_ONLY: 'right'    // 仅右声道
+  };
+
+  // 当前声道模式
+  let currentMode: string = ChannelMode.NORMAL;
   let audioContext: AudioContext | null = null;
   let sourceNode: MediaElementAudioSourceNode | null = null;
   let splitter: ChannelSplitterNode | null = null;
   let merger: ChannelMergerNode | null = null;
   let currentAudioElement: HTMLAudioElement | null = null;
 
-  // 创建声道反转按钮
-  function createSwapButton(): HTMLButtonElement
+  // 创建声道选择下拉框
+  function createChannelSelector(): HTMLElement
   {
+    const container = document.createElement('div');
+    container.id = 'channel-selector-container';
+    container.className = 'q-btn-dropdown q-btn-dropdown--simple';
+    container.style.cssText = 'position: relative; display: inline-block;';
+    container.setAttribute('data-v-627ee493', '');
+
+    // 创建触发按钮
     const button = document.createElement('button');
-    button.id = 'channel-swap-btn';
-    button.innerHTML = '🔄 声道正常';
-    button.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
-      display: none;
+    button.id = 'channel-selector-btn';
+    button.tabIndex = 0;
+    button.type = 'button';
+    button.className = 'q-btn q-btn-item non-selectable no-outline col-auto q-btn--flat q-btn--rectangle q-btn--actionable q-focusable q-hoverable q-btn--wrap q-btn--dense q-px-xs';
+    button.style.cssText = 'font-size: 20px;';
+    button.setAttribute('data-v-627ee493', '');
+
+    button.innerHTML = `
+      <span class="q-focus-helper"></span>
+      <span class="q-btn__wrapper col row q-anchor--skip">
+        <span class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons" style="color: #00bfa5;">swap_horiz</i>
+          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons" style="font-size: 14px; margin-left: 2px;">arrow_drop_down</i>
+        </span>
+      </span>
     `;
 
-    // 鼠标悬停效果
-    button.addEventListener('mouseenter', () =>
+    // 创建下拉菜单
+    const dropdown = document.createElement('div');
+    dropdown.id = 'channel-dropdown';
+    dropdown.style.cssText = `
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 10000;
+      min-width: 150px;
+      margin-top: 4px;
+    `;
+
+    // 创建选项
+    const options = [
+      { value: ChannelMode.NORMAL, label: '🔊 正常声道', color: '#00bfa5' },
+      { value: ChannelMode.SWAP, label: '🔄 反转声道', color: '#ff5252' },
+      { value: ChannelMode.LEFT_ONLY, label: '◀️ 仅左声道', color: '#2196f3' },
+      { value: ChannelMode.RIGHT_ONLY, label: '▶️ 仅右声道', color: '#ff9800' }
+    ];
+
+    options.forEach(option =>
     {
-      button.style.transform = 'translateY(-2px)';
-      button.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+      const item = document.createElement('div');
+      item.className = 'channel-option';
+      item.dataset.value = option.value;
+      item.textContent = option.label;
+      item.style.cssText = `
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 14px;
+        color: #333;
+      `;
+
+      item.addEventListener('mouseenter', () =>
+      {
+        item.style.backgroundColor = '#f5f5f5';
+      });
+
+      item.addEventListener('mouseleave', () =>
+      {
+        item.style.backgroundColor = currentMode === option.value ? '#e3f2fd' : 'white';
+      });
+
+      item.addEventListener('click', () =>
+      {
+        switchChannelMode(option.value);
+        updateButtonIcon(option.color);
+        dropdown.style.display = 'none';
+
+        // 更新选中状态
+        dropdown.querySelectorAll('.channel-option').forEach(opt =>
+        {
+          (opt as HTMLElement).style.backgroundColor = 'white';
+        });
+        item.style.backgroundColor = '#e3f2fd';
+      });
+
+      // 如果是当前模式，高亮显示
+      if (option.value === currentMode)
+      {
+        item.style.backgroundColor = '#e3f2fd';
+      }
+
+      dropdown.appendChild(item);
     });
 
-    button.addEventListener('mouseleave', () =>
+    // 点击按钮切换下拉菜单显示
+    button.addEventListener('click', (e) =>
     {
-      button.style.transform = 'translateY(0)';
-      button.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+      e.stopPropagation();
+      const isVisible = dropdown.style.display === 'block';
+      dropdown.style.display = isVisible ? 'none' : 'block';
     });
 
-    // 点击事件
-    button.addEventListener('click', toggleChannelSwap);
+    // 点击页面其他地方关闭下拉菜单
+    document.addEventListener('click', () =>
+    {
+      dropdown.style.display = 'none';
+    });
 
-    document.body.appendChild(button);
-    return button;
+    container.appendChild(button);
+    container.appendChild(dropdown);
+
+    return container;
+  }
+
+  // 更新按钮图标颜色
+  function updateButtonIcon(color: string)
+  {
+    const button = document.getElementById('channel-selector-btn');
+    if (button)
+    {
+      const icon = button.querySelector('.material-icons');
+      if (icon)
+      {
+        (icon as HTMLElement).style.color = color;
+      }
+    }
   }
 
   // 初始化音频处理
@@ -83,9 +181,8 @@
       // 连接节点：音频源 -> 分离器
       sourceNode.connect(splitter);
 
-      // 正常连接（左->左，右->右）
-      splitter.connect(merger, 0, 0); // 左声道 -> 左输出
-      splitter.connect(merger, 1, 1); // 右声道 -> 右输出
+      // 应用当前模式
+      applyChannelMode(currentMode);
 
       // 连接到输出
       merger.connect(audioContext.destination);
@@ -99,8 +196,48 @@
     }
   }
 
-  // 切换声道
-  function toggleChannelSwap()
+  // 应用声道模式
+  function applyChannelMode(mode: string)
+  {
+    if (!splitter || !merger) return;
+
+    // 断开所有连接
+    splitter.disconnect();
+
+    switch (mode)
+    {
+      case ChannelMode.NORMAL:
+        // 正常模式：左->左，右->右
+        splitter.connect(merger, 0, 0);
+        splitter.connect(merger, 1, 1);
+        console.log('已切换到：正常声道');
+        break;
+
+      case ChannelMode.SWAP:
+        // 反转模式：左->右，右->左
+        splitter.connect(merger, 0, 1);
+        splitter.connect(merger, 1, 0);
+        console.log('已切换到：反转声道');
+        break;
+
+      case ChannelMode.LEFT_ONLY:
+        // 仅左声道：左->左和右
+        splitter.connect(merger, 0, 0);
+        splitter.connect(merger, 0, 1);
+        console.log('已切换到：仅左声道');
+        break;
+
+      case ChannelMode.RIGHT_ONLY:
+        // 仅右声道：右->左和右
+        splitter.connect(merger, 1, 0);
+        splitter.connect(merger, 1, 1);
+        console.log('已切换到：仅右声道');
+        break;
+    }
+  }
+
+  // 切换声道模式
+  function switchChannelMode(mode: string)
   {
     if (!audioContext || !splitter || !merger || !currentAudioElement)
     {
@@ -110,45 +247,11 @@
 
     try
     {
-      // 断开所有连接
-      splitter.disconnect();
-
-      if (!isChannelSwapped)
-      {
-        // 反转声道（左->右，右->左）
-        splitter.connect(merger, 0, 1); // 左声道 -> 右输出
-        splitter.connect(merger, 1, 0); // 右声道 -> 左输出
-        isChannelSwapped = true;
-
-        // 更新按钮状态
-        const button = document.getElementById('channel-swap-btn');
-        if (button)
-        {
-          button.innerHTML = '🔄 声道反转';
-          button.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-        }
-
-        console.log('声道已反转');
-      } else
-      {
-        // 恢复正常（左->左，右->右）
-        splitter.connect(merger, 0, 0); // 左声道 -> 左输出
-        splitter.connect(merger, 1, 1); // 右声道 -> 右输出
-        isChannelSwapped = false;
-
-        // 更新按钮状态
-        const button = document.getElementById('channel-swap-btn');
-        if (button)
-        {
-          button.innerHTML = '🔄 声道正常';
-          button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        }
-
-        console.log('声道已恢复正常');
-      }
+      currentMode = mode;
+      applyChannelMode(mode);
     } catch (error)
     {
-      console.error('切换声道失败:', error);
+      console.error('切换声道模式失败:', error);
     }
   }
 
@@ -176,13 +279,32 @@
       audioContext = null;
     }
     currentAudioElement = null;
-    isChannelSwapped = false;
+    currentMode = ChannelMode.NORMAL;
   }
 
-  // 监听音频元素
+  // 监听音频元素并插入选择器到播放器
   function observeAudioElements()
   {
-    const button = createSwapButton();
+    const selector = createChannelSelector();
+    let selectorInserted = false;
+
+    // 尝试将选择器插入到播放器控制栏
+    const insertSelectorToPlayer = () =>
+    {
+      if (selectorInserted) return;
+
+      // 查找播放控制按钮组（PC端和移动端）
+      const controlRow = document.querySelector('.row.flex-center') ||
+        document.querySelector('.row.q-py-md.self-center');
+
+      if (controlRow && controlRow.querySelector('button'))
+      {
+        // 插入到播放控制按钮组的最后
+        controlRow.appendChild(selector);
+        selectorInserted = true;
+        console.log('声道选择器已插入到播放器');
+      }
+    };
 
     // 检查音频元素的函数
     const checkAudioElements = () =>
@@ -191,6 +313,9 @@
 
       if (audioElements.length > 0)
       {
+        // 尝试插入选择器
+        insertSelectorToPlayer();
+
         audioElements.forEach((audio) =>
         {
           // 监听播放事件
@@ -199,7 +324,6 @@
             audio.addEventListener('play', () =>
             {
               console.log('检测到音频播放');
-              button.style.display = 'block';
 
               // 初始化音频处理
               if (!sourceNode || currentAudioElement !== audio)
@@ -216,7 +340,6 @@
             audio.addEventListener('ended', () =>
             {
               console.log('音频播放结束');
-              button.style.display = 'none';
             });
 
             audio.dataset.channelSwapListenerAdded = 'true';
@@ -258,5 +381,5 @@
     cleanupAudioProcessing();
   });
 
-  console.log('ASMR声道反转脚本已加载');
+  console.log('ASMR声道切换脚本已加载');
 })();
