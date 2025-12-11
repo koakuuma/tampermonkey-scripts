@@ -2045,21 +2045,67 @@ var __webpack_exports__ = {};
       if (selectorInserted) return;
 
       // 查找播放控制按钮组（支持PC端和移动端多种布局）
-      const controlRow =
-      // PC端选择器
-      document.querySelector('.row.flex-center') || document.querySelector('.row.q-py-md.self-center') ||
-      // 移动端选择器
-      document.querySelector('.row.items-center.q-mx-lg.q-pt-sm') || document.querySelector('.row.items-center.q-gutter-x-sm') || document.querySelector('[data-v-627ee493].row.items-center') ||
-      // 通用选择器 - 查找包含音量控制的行
-      Array.from(document.querySelectorAll('.row.items-center')).find(el => {
-        var _el$querySelector;
-        return (_el$querySelector = el.querySelector('.material-icons')) === null || _el$querySelector === void 0 || (_el$querySelector = _el$querySelector.textContent) === null || _el$querySelector === void 0 ? void 0 : _el$querySelector.includes('volume');
-      });
-      if (controlRow && (controlRow.querySelector('button') || controlRow.querySelector('.ant-slider'))) {
-        // 插入到播放控制按钮组的最后
-        controlRow.appendChild(selector);
+      let controlRow = null;
+
+      // 方法1: 查找包含播放控制按钮的行（最通用）
+      const rows = document.querySelectorAll('[data-v-627ee493].row');
+      for (const row of rows) {
+        // 检查是否包含播放控制按钮（skip_previous, pause, play_arrow, skip_next等）
+        const icons = row.querySelectorAll('.material-icons');
+        const hasPlayControls = Array.from(icons).some(icon => {
+          var _icon$textContent;
+          return ['skip_previous', 'skip_next', 'pause', 'play_arrow', 'replay_5', 'forward_30'].includes(((_icon$textContent = icon.textContent) === null || _icon$textContent === void 0 ? void 0 : _icon$textContent.trim()) || '');
+        });
+        if (hasPlayControls) {
+          controlRow = row;
+          console.log('找到播放控制栏（通过图标匹配）:', row.className);
+          break;
+        }
+      }
+
+      // 方法2: 使用特定的类名选择器作为备选
+      if (!controlRow) {
+        controlRow =
+        // PC端选择器
+        document.querySelector('.row.flex-center') ||
+        // 移动端选择器 - 包含播放控制按钮的行
+        document.querySelector('.row.q-py-md.self-center') ||
+        // 音量控制行
+        document.querySelector('.row.items-center.q-mx-lg.q-pt-sm') || document.querySelector('.row.items-center.q-gutter-x-sm') ||
+        // 通用选择器
+        Array.from(document.querySelectorAll('.row.items-center')).find(el => {
+          var _el$querySelector;
+          return (_el$querySelector = el.querySelector('.material-icons')) === null || _el$querySelector === void 0 || (_el$querySelector = _el$querySelector.textContent) === null || _el$querySelector === void 0 ? void 0 : _el$querySelector.includes('volume');
+        }) || null;
+        if (controlRow) {
+          console.log('找到播放控制栏（通过类名匹配）:', controlRow.className);
+        }
+      }
+      if (controlRow) {
+        // 检测是否为移动端布局（通过类名判断）
+        const isMobile = controlRow.classList.contains('q-py-md') || controlRow.classList.contains('self-center');
+        if (isMobile) {
+          // 移动端：创建一个新的居中行来放置选择器
+          const centerRow = document.createElement('div');
+          centerRow.className = 'row justify-center q-py-sm';
+          centerRow.setAttribute('data-v-627ee493', '');
+          centerRow.appendChild(selector);
+
+          // 将居中行插入到播放控制栏的后面
+          if (controlRow.parentNode && controlRow.nextSibling) {
+            controlRow.parentNode.insertBefore(centerRow, controlRow.nextSibling);
+          } else if (controlRow.parentNode) {
+            controlRow.parentNode.appendChild(centerRow);
+          }
+          console.log('声道选择器已成功插入到播放器（移动端居中）');
+        } else {
+          // PC端：直接追加到播放控制按钮组的最后
+          controlRow.appendChild(selector);
+          console.log('声道选择器已成功插入到播放器（PC端）');
+        }
         selectorInserted = true;
-        console.log('声道选择器已插入到播放器');
+      } else {
+        console.log('未找到播放控制栏，将在下次检查时重试');
       }
     };
 
