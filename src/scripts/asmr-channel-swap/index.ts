@@ -21,137 +21,149 @@
   let merger: ChannelMergerNode | null = null;
   let currentAudioElement: HTMLAudioElement | null = null;
 
-  // 创建声道选择下拉框
+  // 声道模式配置
+  const modeConfig = [
+    { value: ChannelMode.NORMAL, label: '正常声道', icon: '🔊', color: '#00bfa5' },
+    { value: ChannelMode.SWAP, label: '反转声道', icon: '🔄', color: '#ff5252' },
+    { value: ChannelMode.LEFT_ONLY, label: '仅左声道', icon: '◀️', color: '#2196f3' },
+    { value: ChannelMode.RIGHT_ONLY, label: '仅右声道', icon: '▶️', color: '#ff9800' }
+  ];
+
+  // 获取当前模式索引
+  function getCurrentModeIndex(): number
+  {
+    return modeConfig.findIndex(m => m.value === currentMode);
+  }
+
+  // 获取当前模式配置
+  function getCurrentModeConfig()
+  {
+    return modeConfig[getCurrentModeIndex()];
+  }
+
+  // 创建声道切换器（轮切模式）
   function createChannelSelector(): HTMLElement
   {
     const container = document.createElement('div');
     container.id = 'channel-selector-container';
-    container.className = 'q-btn-dropdown q-btn-dropdown--simple';
-    container.style.cssText = 'position: relative; display: inline-block;';
+    container.style.cssText = `
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 20px;
+      user-select: none;
+    `;
     container.setAttribute('data-v-627ee493', '');
 
-    // 创建触发按钮
-    const button = document.createElement('button');
-    button.id = 'channel-selector-btn';
-    button.tabIndex = 0;
-    button.type = 'button';
-    button.className = 'q-btn q-btn-item non-selectable no-outline col-auto q-btn--flat q-btn--rectangle q-btn--actionable q-focusable q-hoverable q-btn--wrap q-btn--dense q-px-xs';
-    button.style.cssText = 'font-size: 20px;';
-    button.setAttribute('data-v-627ee493', '');
-
-    button.innerHTML = `
+    // 创建左箭头按钮
+    const leftButton = document.createElement('button');
+    leftButton.id = 'channel-prev-btn';
+    leftButton.tabIndex = 0;
+    leftButton.type = 'button';
+    leftButton.className = 'q-btn q-btn-item non-selectable no-outline q-btn--flat q-btn--round q-btn--actionable q-focusable q-hoverable';
+    leftButton.style.cssText = `
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
+      font-size: 18px;
+    `;
+    leftButton.setAttribute('data-v-627ee493', '');
+    leftButton.innerHTML = `
       <span class="q-focus-helper"></span>
       <span class="q-btn__wrapper col row q-anchor--skip">
         <span class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
-          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons" style="color: #00bfa5;">swap_horiz</i>
-          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons" style="font-size: 14px; margin-left: 2px;">arrow_drop_down</i>
+          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons">chevron_left</i>
         </span>
       </span>
     `;
 
-    // 创建下拉菜单
-    const dropdown = document.createElement('div');
-    dropdown.id = 'channel-dropdown';
-    dropdown.style.cssText = `
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 10000;
-      min-width: 150px;
-      margin-top: 4px;
+    // 创建模式显示标签
+    const modeLabel = document.createElement('div');
+    modeLabel.id = 'channel-mode-label';
+    modeLabel.style.cssText = `
+      min-width: 100px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: ${getCurrentModeConfig().color};
+      white-space: nowrap;
+      transition: color 0.3s;
+    `;
+    modeLabel.textContent = `${getCurrentModeConfig().icon} ${getCurrentModeConfig().label}`;
+
+    // 创建右箭头按钮
+    const rightButton = document.createElement('button');
+    rightButton.id = 'channel-next-btn';
+    rightButton.tabIndex = 0;
+    rightButton.type = 'button';
+    rightButton.className = 'q-btn q-btn-item non-selectable no-outline q-btn--flat q-btn--round q-btn--actionable q-focusable q-hoverable';
+    rightButton.style.cssText = `
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
+      font-size: 18px;
+    `;
+    rightButton.setAttribute('data-v-627ee493', '');
+    rightButton.innerHTML = `
+      <span class="q-focus-helper"></span>
+      <span class="q-btn__wrapper col row q-anchor--skip">
+        <span class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+          <i aria-hidden="true" role="img" class="q-icon notranslate material-icons">chevron_right</i>
+        </span>
+      </span>
     `;
 
-    // 创建选项
-    const options = [
-      { value: ChannelMode.NORMAL, label: '🔊 正常声道', color: '#00bfa5' },
-      { value: ChannelMode.SWAP, label: '🔄 反转声道', color: '#ff5252' },
-      { value: ChannelMode.LEFT_ONLY, label: '◀️ 仅左声道', color: '#2196f3' },
-      { value: ChannelMode.RIGHT_ONLY, label: '▶️ 仅右声道', color: '#ff9800' }
-    ];
-
-    options.forEach(option =>
-    {
-      const item = document.createElement('div');
-      item.className = 'channel-option';
-      item.dataset.value = option.value;
-      item.textContent = option.label;
-      item.style.cssText = `
-        padding: 10px 16px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        font-size: 14px;
-        color: #333;
-      `;
-
-      item.addEventListener('mouseenter', () =>
-      {
-        item.style.backgroundColor = '#f5f5f5';
-      });
-
-      item.addEventListener('mouseleave', () =>
-      {
-        item.style.backgroundColor = currentMode === option.value ? '#e3f2fd' : 'white';
-      });
-
-      item.addEventListener('click', () =>
-      {
-        switchChannelMode(option.value);
-        updateButtonIcon(option.color);
-        dropdown.style.display = 'none';
-
-        // 更新选中状态
-        dropdown.querySelectorAll('.channel-option').forEach(opt =>
-        {
-          (opt as HTMLElement).style.backgroundColor = 'white';
-        });
-        item.style.backgroundColor = '#e3f2fd';
-      });
-
-      // 如果是当前模式，高亮显示
-      if (option.value === currentMode)
-      {
-        item.style.backgroundColor = '#e3f2fd';
-      }
-
-      dropdown.appendChild(item);
-    });
-
-    // 点击按钮切换下拉菜单显示
-    button.addEventListener('click', (e) =>
+    // 左箭头点击事件 - 切换到上一个模式
+    leftButton.addEventListener('click', (e) =>
     {
       e.stopPropagation();
-      const isVisible = dropdown.style.display === 'block';
-      dropdown.style.display = isVisible ? 'none' : 'block';
+      const currentIndex = getCurrentModeIndex();
+      const prevIndex = (currentIndex - 1 + modeConfig.length) % modeConfig.length;
+      const prevMode = modeConfig[prevIndex];
+      switchChannelMode(prevMode.value);
+      updateModeLabel(prevMode);
     });
 
-    // 点击页面其他地方关闭下拉菜单
-    document.addEventListener('click', () =>
+    // 右箭头点击事件 - 切换到下一个模式
+    rightButton.addEventListener('click', (e) =>
     {
-      dropdown.style.display = 'none';
+      e.stopPropagation();
+      const currentIndex = getCurrentModeIndex();
+      const nextIndex = (currentIndex + 1) % modeConfig.length;
+      const nextMode = modeConfig[nextIndex];
+      switchChannelMode(nextMode.value);
+      updateModeLabel(nextMode);
     });
 
-    container.appendChild(button);
-    container.appendChild(dropdown);
+    // 点击标签也可以切换到下一个模式
+    modeLabel.addEventListener('click', (e) =>
+    {
+      e.stopPropagation();
+      const currentIndex = getCurrentModeIndex();
+      const nextIndex = (currentIndex + 1) % modeConfig.length;
+      const nextMode = modeConfig[nextIndex];
+      switchChannelMode(nextMode.value);
+      updateModeLabel(nextMode);
+    });
+    modeLabel.style.cursor = 'pointer';
+
+    container.appendChild(leftButton);
+    container.appendChild(modeLabel);
+    container.appendChild(rightButton);
 
     return container;
   }
 
-  // 更新按钮图标颜色
-  function updateButtonIcon(color: string)
+  // 更新模式标签
+  function updateModeLabel(modeInfo: typeof modeConfig[0])
   {
-    const button = document.getElementById('channel-selector-btn');
-    if (button)
+    const label = document.getElementById('channel-mode-label');
+    if (label)
     {
-      const icon = button.querySelector('.material-icons');
-      if (icon)
-      {
-        (icon as HTMLElement).style.color = color;
-      }
+      label.textContent = `${modeInfo.icon} ${modeInfo.label}`;
+      label.style.color = modeInfo.color;
     }
   }
 
@@ -293,11 +305,21 @@
     {
       if (selectorInserted) return;
 
-      // 查找播放控制按钮组（PC端和移动端）
-      const controlRow = document.querySelector('.row.flex-center') ||
-        document.querySelector('.row.q-py-md.self-center');
+      // 查找播放控制按钮组（支持PC端和移动端多种布局）
+      const controlRow =
+        // PC端选择器
+        document.querySelector('.row.flex-center') ||
+        document.querySelector('.row.q-py-md.self-center') ||
+        // 移动端选择器
+        document.querySelector('.row.items-center.q-mx-lg.q-pt-sm') ||
+        document.querySelector('.row.items-center.q-gutter-x-sm') ||
+        document.querySelector('[data-v-627ee493].row.items-center') ||
+        // 通用选择器 - 查找包含音量控制的行
+        Array.from(document.querySelectorAll('.row.items-center')).find(el =>
+          el.querySelector('.material-icons')?.textContent?.includes('volume')
+        );
 
-      if (controlRow && controlRow.querySelector('button'))
+      if (controlRow && (controlRow.querySelector('button') || controlRow.querySelector('.ant-slider')))
       {
         // 插入到播放控制按钮组的最后
         controlRow.appendChild(selector);
