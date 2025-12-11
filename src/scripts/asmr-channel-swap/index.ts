@@ -19,6 +19,8 @@
   let sourceNode: MediaElementAudioSourceNode | null = null;
   let splitter: ChannelSplitterNode | null = null;
   let merger: ChannelMergerNode | null = null;
+  let gainNodeLeft: GainNode | null = null;
+  let gainNodeRight: GainNode | null = null;
   let currentAudioElement: HTMLAudioElement | null = null;
 
   // 声道模式配置
@@ -190,6 +192,10 @@
       // 创建声道合并器（将左右声道合并回立体声）
       merger = audioContext.createChannelMerger(2);
 
+      // 创建增益节点用于混合和控制音量
+      gainNodeLeft = audioContext.createGain();
+      gainNodeRight = audioContext.createGain();
+
       // 连接节点：音频源 -> 分离器
       sourceNode.connect(splitter);
 
@@ -233,17 +239,33 @@
         break;
 
       case ChannelMode.LEFT_ONLY:
-        // 仅左声道：左->左和右
-        splitter.connect(merger, 0, 0);
-        splitter.connect(merger, 0, 1);
-        console.log('已切换到：仅左声道');
+        // 仅左声道：左右声道混合后只输出到左边（右耳机静音）
+        if (gainNodeLeft && gainNodeRight)
+        {
+          // 左声道和右声道都连接到左边的增益节点
+          splitter.connect(gainNodeLeft, 0);
+          splitter.connect(gainNodeLeft, 1);
+          // 左边增益节点输出到左声道
+          gainNodeLeft.connect(merger, 0, 0);
+
+          // 右声道静音（不连接任何内容到右声道）
+        }
+        console.log('已切换到：仅左声道（混合输出）');
         break;
 
       case ChannelMode.RIGHT_ONLY:
-        // 仅右声道：右->左和右
-        splitter.connect(merger, 1, 0);
-        splitter.connect(merger, 1, 1);
-        console.log('已切换到：仅右声道');
+        // 仅右声道：左右声道混合后只输出到右边（左耳机静音）
+        if (gainNodeLeft && gainNodeRight)
+        {
+          // 左声道和右声道都连接到右边的增益节点
+          splitter.connect(gainNodeRight, 0);
+          splitter.connect(gainNodeRight, 1);
+          // 右边增益节点输出到右声道
+          gainNodeRight.connect(merger, 0, 1);
+
+          // 左声道静音（不连接任何内容到左声道）
+        }
+        console.log('已切换到：仅右声道（混合输出）');
         break;
     }
   }
@@ -279,6 +301,16 @@
     {
       splitter.disconnect();
       splitter = null;
+    }
+    if (gainNodeLeft)
+    {
+      gainNodeLeft.disconnect();
+      gainNodeLeft = null;
+    }
+    if (gainNodeRight)
+    {
+      gainNodeRight.disconnect();
+      gainNodeRight = null;
     }
     if (merger)
     {
