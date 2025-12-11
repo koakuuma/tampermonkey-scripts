@@ -2087,8 +2087,10 @@ var __webpack_exports__ = {};
         if (isMobile) {
           // 移动端：创建一个新的居中行来放置选择器
           const centerRow = document.createElement('div');
-          centerRow.className = 'row justify-center q-py-sm';
+          centerRow.className = 'row justify-center';
           centerRow.setAttribute('data-v-627ee493', '');
+          // 添加自定义样式来调整上下间距
+          centerRow.style.cssText = 'margin-top: -36px; margin-bottom: -18px;';
           centerRow.appendChild(selector);
 
           // 将居中行插入到播放控制栏的后面
