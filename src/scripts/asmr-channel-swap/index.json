@@ -1,0 +1,20 @@
+{
+  "name": "ASMR音频声道反转",
+  "namespace": "https://github.com/shangxueink",
+  "version": "1.0",
+  "description": "在ASMR网站上添加音频声道反转功能，支持一键切换左右声道",
+  "author": "shangxueink",
+  "license": "MIT",
+  "match": [
+    "https://www.asmr.one/work/*"
+  ],
+  "icon": "https://www.google.com/s2/favicons?sz=64&domain=asmr.one",
+  "grant": "none",
+  "run-at": "document-end",
+  "homepageURL": "https://github.com/koakuuma/tampermonkey-scripts",
+  "supportURL": "https://github.com/koakuuma/tampermonkey-scripts/issues",
+  "prod": {
+    "downloadURL": "https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/asmr-channel-swap.user.js",
+    "updateURL": "https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/asmr-channel-swap.user.js"
+  }
+}

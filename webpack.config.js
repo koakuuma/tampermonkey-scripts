@@ -15,6 +15,9 @@ function getScriptEntries()
   const scriptsDir = path.join(__dirname, 'src/scripts');
   const entries = {};
 
+  // 检查是否指定了特定脚本（通过环境变量 SCRIPT）
+  const targetScript = process.env.SCRIPT;
+
   // 读取 src/scripts 目录
   if (fs.existsSync(scriptsDir))
   {
@@ -25,6 +28,13 @@ function getScriptEntries()
       if (dirent.isDirectory())
       {
         const scriptName = dirent.name;
+
+        // 如果指定了特定脚本，只编译该脚本
+        if (targetScript && scriptName !== targetScript)
+        {
+          return;
+        }
+
         const indexPath = path.join(scriptsDir, scriptName, 'index.ts');
 
         // 检查是否存在 index.ts

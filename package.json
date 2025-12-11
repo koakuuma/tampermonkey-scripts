@@ -27,7 +27,7 @@
   "scripts": {
     "serve": "webpack serve --mode=development",
     "dev": "webpack --mode=development --watch --progress",
-    "build": "webpack --mode=production --progress",
+    "build": "node scripts/build.js",
     "npx": "tsc --noEmit"
   },
   "dependencies": {
