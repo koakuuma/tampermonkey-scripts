@@ -67,8 +67,9 @@ interface FetchResult
       { url: "https://gitee.com/shangxueink/koishi-registry-aggregator/raw/gh-pages/market.json", useProxy: true },
       { url: "https://koishi-shangxue-plugins.github.io/koishi-registry-aggregator/market.json", useProxy: false },
       { url: 'https://koishi-registry.yumetsuki.moe/index.json', useProxy: false },
-      { url: "https://cdn.jsdmirror.com/gh/koishi-shangxue-plugins/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },
-      { url: "https://cdn.jsdelivr.net/gh/koishi-shangxue-plugins/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },
+      // 这两个有时候更新也太慢了
+      // { url: "https://cdn.jsdmirror.com/gh/koishi-shangxue-plugins/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },
+      // { url: "https://cdn.jsdelivr.net/gh/koishi-shangxue-plugins/koishi-registry-aggregator@gh-pages/market.json", useProxy: false },
     ],
     currentMirrorIndex: 0,
     debug: false,
