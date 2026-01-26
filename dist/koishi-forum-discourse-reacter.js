@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Koishi Forum Discourse Reacter
 // @namespace    https://github.com/shangxueink
-// @version      0.5.0
+// @version      0.5.1
 // @description  长按爱心按钮为 Koishi 论坛的当前帖子所有可点赞内容点赞，松开停止
 // @author       shangxueink
 // @license      MIT
@@ -10,8 +10,8 @@
 // @grant        none
 // @homepageURL  https://github.com/koakuuma/tampermonkey-scripts
 // @supportURL   https://github.com/koakuuma/tampermonkey-scripts/issues
-// @downloadURL  https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/koishi-forum-discourse-reacter.user.js
-// @updateURL    https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/koishi-forum-discourse-reacter.user.js
+// @downloadURL  https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/koishi-forum-discourse-reacter.js
+// @updateURL    https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/koishi-forum-discourse-reacter.js
 // ==/UserScript==
 /******/ (() => { // webpackBootstrap
 // Koishi Forum Discourse Reacter

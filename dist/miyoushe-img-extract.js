@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         米游社帖子图片链接提取
 // @namespace    https://github.com/shangxueink
-// @version      1.3
+// @version      1.4
 // @description  提取米游社帖子中的图片链接
 // @author       shangxueink
 // @match        https://www.miyoushe.com/*
@@ -10,8 +10,8 @@
 // @run-at       document-end
 // @homepageURL  https://github.com/koakuuma/tampermonkey-scripts
 // @supportURL   https://github.com/koakuuma/tampermonkey-scripts/issues
-// @downloadURL  https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/miyoushe-img-extract.user.js
-// @updateURL    https://github.com/koakuuma/tampermonkey-scripts/raw/main/dist/miyoushe-img-extract.user.js
+// @downloadURL  https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/miyoushe-img-extract.js
+// @updateURL    https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/miyoushe-img-extract.js
 // ==/UserScript==
 /******/ (() => { // webpackBootstrap
 // 米游社帖子图片链接提取
