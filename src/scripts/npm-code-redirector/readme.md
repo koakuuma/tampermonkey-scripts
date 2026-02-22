@@ -12,7 +12,3 @@
 ## 支持的页面
 
 - `https://www.npmjs.com/package/*`
-
-## 版本历史
-
-- v1.0: 初始版本,支持 Code 按钮点击跳转
