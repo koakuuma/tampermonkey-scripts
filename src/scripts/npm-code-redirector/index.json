@@ -1,0 +1,20 @@
+{
+  "name": "NPM Code Tab Redirector",
+  "namespace": "https://github.com/shangxueink",
+  "version": "1.0",
+  "description": "在 npmjs.com 的 package 页面点击 Code 按钮时自动跳转到 npm-package-editor",
+  "author": "shangxueink",
+  "license": "MIT",
+  "match": [
+    "https://www.npmjs.com/package/*"
+  ],
+  "icon": "https://www.google.com/s2/favicons?sz=64&domain=npmjs.com",
+  "grant": "none",
+  "run-at": "document-end",
+  "homepageURL": "https://github.com/koakuuma/tampermonkey-scripts",
+  "supportURL": "https://github.com/koakuuma/tampermonkey-scripts/issues",
+  "prod": {
+    "downloadURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/npm-code-redirector.js",
+    "updateURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/npm-code-redirector.js"
+  }
+}
