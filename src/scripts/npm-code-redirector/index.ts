@@ -7,8 +7,10 @@
 
   function extractPackageName(): string | null
   {
-    const match = window.location.pathname.match(/^\/package\/(.+?)(?:\/|$)/);
-    return match ? match[1] : null;
+    const match = window.location.pathname.match(/^\/package\/(.+)/);
+    if (!match) return null;
+    // 去掉末尾可能的斜杠，但保留 @scope/package 中的斜杠
+    return match[1].replace(/\/$/, '');
   }
 
   function handleCodeTabClick(e: MouseEvent): void

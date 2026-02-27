@@ -1,7 +1,7 @@
 {
   "name": "NPM Code Tab Redirector",
   "namespace": "https://github.com/shangxueink",
-  "version": "1.0",
+  "version": "1.1",
   "description": "在 npmjs.com 的 package 页面点击 Code 按钮时自动跳转到 npm-package-editor",
   "author": "shangxueink",
   "license": "MIT",
