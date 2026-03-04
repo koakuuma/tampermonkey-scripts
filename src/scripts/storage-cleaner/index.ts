@@ -149,47 +149,14 @@ declare function GM_registerMenuCommand(caption: string, commandFunc: () => void
     }
   }
 
-  // 显示存储大小的菜单命令
-  function registerShowSizeCommand(): void
+  // 清空存储的菜单命令
+  function registerClearCommand(): void
   {
     const size = calculateStorageSize();
     const sizeText = formatBytes(size);
 
-    GM_registerMenuCommand(`📊 存储数据 ${sizeText}`, () =>
+    GM_registerMenuCommand(`🗑️ 清空存储数据 ${sizeText}`, () =>
     {
-      const confirmMsg = `当前网页存储数据大小约为：${sizeText}\n\n包括：\n` +
-        `• localStorage: ${localStorage.length} 项\n` +
-        `• sessionStorage: ${sessionStorage.length} 项\n` +
-        `• Cookies: ${document.cookie.split(';').filter(c => c.trim()).length} 项\n\n` +
-        `是否要清空所有存储数据？`;
-
-      if (confirm(confirmMsg))
-      {
-        clearAllStorage()
-          .then(() =>
-          {
-            alert('✅ 存储内容已清空！\n\n页面将在3秒后自动刷新...');
-            setTimeout(() =>
-            {
-              location.reload();
-            }, 3000);
-          })
-          .catch((error) =>
-          {
-            alert('❌ 清空存储时出错：' + error.message);
-          });
-      }
-    });
-  }
-
-  // 直接清空存储的菜单命令
-  function registerClearCommand(): void
-  {
-    GM_registerMenuCommand('🗑️ 清空所有存储', () =>
-    {
-      const size = calculateStorageSize();
-      const sizeText = formatBytes(size);
-
       const confirmMsg = `即将清空当前网页的所有存储数据！\n\n` +
         `当前存储大小：${sizeText}\n` +
         `• localStorage: ${localStorage.length} 项\n` +
@@ -202,11 +169,7 @@ declare function GM_registerMenuCommand(caption: string, commandFunc: () => void
         clearAllStorage()
           .then(() =>
           {
-            alert('✅ 存储内容已清空！\n\n页面将在3秒后自动刷新...');
-            setTimeout(() =>
-            {
-              location.reload();
-            }, 3000);
+            location.reload();
           })
           .catch((error) =>
           {
@@ -259,7 +222,6 @@ declare function GM_registerMenuCommand(caption: string, commandFunc: () => void
     try
     {
       // 注册菜单命令
-      registerShowSizeCommand();
       registerClearCommand();
       registerExportCommand();
 
