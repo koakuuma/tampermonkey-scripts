@@ -1,0 +1,22 @@
+{
+  "name": "网页存储清理器",
+  "namespace": "https://github.com/shangxueink",
+  "version": "1.0",
+  "description": "清空当前网页的所有存储数据（localStorage、sessionStorage、IndexedDB、Cookies等）",
+  "author": "shangxueink",
+  "license": "MIT",
+  "match": [
+    "*://*/*"
+  ],
+  "icon": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff5252' d='M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z'/%3E%3C/svg%3E",
+  "grant": [
+    "GM_registerMenuCommand"
+  ],
+  "run-at": "document-end",
+  "homepageURL": "https://github.com/koakuuma/tampermonkey-scripts",
+  "supportURL": "https://github.com/koakuuma/tampermonkey-scripts/issues",
+  "prod": {
+    "downloadURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/storage-cleaner.js",
+    "updateURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/storage-cleaner.js"
+  }
+}
