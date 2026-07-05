@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Koishi Market Registry Redirector
 // @namespace    https://github.com/shangxueink
-// @version      4.6
+// @version      4.7
 // @description  将 Koishi 市场注册表请求重定向到多个备用镜像源，支持自动重试、单独配置每个镜像源的代理请求解决CORS问题，并修复时间显示问题，镜像地址可点击复制，增加返回顶部按钮。
 // @author       shangxueink
 // @license      MIT
@@ -3311,6 +3311,31 @@ var __webpack_exports__ = {};
   const normalizeUrl = url => {
     return url.replace(/\/+$/, '');
   };
+  const enhanceRegistrySearchability = data => {
+    if (!data || !Array.isArray(data.objects)) {
+      return data;
+    }
+    return {
+      ...data,
+      objects: data.objects.map(item => {
+        const pkg = item === null || item === void 0 ? void 0 : item.package;
+        if (!pkg || typeof pkg.name !== 'string') {
+          return item;
+        }
+        const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
+        if (keywords.includes(pkg.name)) {
+          return item;
+        }
+        return {
+          ...item,
+          package: {
+            ...pkg,
+            keywords: [...keywords, pkg.name]
+          }
+        };
+      })
+    };
+  };
   const DEFAULT_CONFIG = {
     sourceUrl: normalizeUrl('registry.koishi.chat/index.json'),
     mirrorUrls: [{
@@ -5043,19 +5068,34 @@ var __webpack_exports__ = {};
       CONFIG.currentMirrorIndex = index;
       localStorage.setItem('koishiMarketConfig', JSON.stringify(CONFIG));
       const clonedResponse = response.clone();
-      clonedResponse.json().then(data => {
-        registryData = data;
-        log('Cached registry data from fastest mirror.');
+      return clonedResponse.text().then(text => {
+        let enhancedData = null;
+        try {
+          const parsedData = JSON.parse(text);
+          enhancedData = enhanceRegistrySearchability(parsedData);
+          registryData = enhancedData;
+          log('Cached registry data from fastest mirror.');
+        } catch (err) {
+          error('Failed to parse registry data from fastest mirror:', err);
+        }
         const mirrorInfoEl = document.querySelector('.mirror-info code');
         if (mirrorInfoEl) {
           const proxyStatus = winningMirror.useProxy ? ' (代理)' : '';
           mirrorInfoEl.textContent = `${winningMirror.url}${proxyStatus}`;
         }
         setTimeout(initTimeFixing, 1000);
-      }).catch(err => {
-        error('Failed to parse registry data from fastest mirror:', err);
+        if (!enhancedData) {
+          return response;
+        }
+        const headers = new Headers(response.headers);
+        headers.delete('content-length');
+        headers.set('content-type', 'application/json');
+        return new Response(JSON.stringify(enhancedData), {
+          status: response.status,
+          statusText: response.statusText,
+          headers
+        });
       });
-      return response;
     }).catch(aggregateError => {
       error('All mirror requests failed.', aggregateError.errors);
       // 返回一个失败的Promise，以便调用者可以处理

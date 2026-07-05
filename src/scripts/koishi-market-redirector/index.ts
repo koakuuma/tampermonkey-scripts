@@ -24,6 +24,8 @@ interface RegistryPackage
 {
   name: string;
   date: string;
+  keywords?: string[];
+  description?: string;
   links?: {
     repository?: string;
     homepage?: string;
@@ -59,6 +61,40 @@ interface FetchResult
   const normalizeUrl = (url: string): string =>
   {
     return url.replace(/\/+$/, '');
+  };
+
+  const enhanceRegistrySearchability = (data: RegistryData): RegistryData =>
+  {
+    if (!data || !Array.isArray(data.objects))
+    {
+      return data;
+    }
+
+    return {
+      ...data,
+      objects: data.objects.map((item) =>
+      {
+        const pkg = item?.package;
+        if (!pkg || typeof pkg.name !== 'string')
+        {
+          return item;
+        }
+
+        const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
+        if (keywords.includes(pkg.name))
+        {
+          return item;
+        }
+
+        return {
+          ...item,
+          package: {
+            ...pkg,
+            keywords: [...keywords, pkg.name]
+          }
+        };
+      })
+    };
   };
 
   const DEFAULT_CONFIG: Config = {
@@ -2008,10 +2044,21 @@ interface FetchResult
         localStorage.setItem('koishiMarketConfig', JSON.stringify(CONFIG));
 
         const clonedResponse = response.clone();
-        clonedResponse.json().then((data: RegistryData) =>
+        return clonedResponse.text().then((text) =>
         {
-          registryData = data;
-          log('Cached registry data from fastest mirror.');
+          let enhancedData: RegistryData | null = null;
+
+          try
+          {
+            const parsedData = JSON.parse(text) as RegistryData;
+            enhancedData = enhanceRegistrySearchability(parsedData);
+            registryData = enhancedData;
+            log('Cached registry data from fastest mirror.');
+          } catch (err)
+          {
+            error('Failed to parse registry data from fastest mirror:', err);
+          }
+
           const mirrorInfoEl = document.querySelector('.mirror-info code');
           if (mirrorInfoEl)
           {
@@ -2019,12 +2066,22 @@ interface FetchResult
             mirrorInfoEl.textContent = `${winningMirror.url}${proxyStatus}`;
           }
           setTimeout(initTimeFixing, 1000);
-        }).catch((err: unknown) =>
-        {
-          error('Failed to parse registry data from fastest mirror:', err);
-        });
 
-        return response;
+          if (!enhancedData)
+          {
+            return response;
+          }
+
+          const headers = new Headers(response.headers);
+          headers.delete('content-length');
+          headers.set('content-type', 'application/json');
+
+          return new Response(JSON.stringify(enhancedData), {
+            status: response.status,
+            statusText: response.statusText,
+            headers
+          });
+        });
       })
       .catch((aggregateError: AggregateError) =>
       {
