@@ -100,7 +100,9 @@ interface FetchResult
   const DEFAULT_CONFIG: Config = {
     sourceUrl: normalizeUrl('registry.koishi.chat/index.json'),
     mirrorUrls: [
-      { url: "https://gitee.com/shangxueink/koishi-registry-aggregator/raw/gh-pages/market.json", useProxy: true },
+      { url: "https://registry.koishi.chat", useProxy: false },
+      // useProxy 这个代理地址不可用了
+      // { url: "https://gitee.com/shangxueink/koishi-registry-aggregator/raw/gh-pages/market.json", useProxy: true },
       { url: "https://koishi-shangxue-plugins.github.io/koishi-registry-aggregator/market.json", useProxy: false },
       { url: 'https://koishi-registry.yumetsuki.moe/index.json', useProxy: false },
       // 这两个有时候更新也太慢了
