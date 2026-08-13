@@ -1,0 +1,20 @@
+{
+  "name": "QQ 机器人开发文档一键下载",
+  "namespace": "https://github.com/shangxueink",
+  "version": "1.1.0",
+  "description": "在 QQ 机器人官方开发文档页面右上角增加“下载文档”按钮，按左侧目录将当前开发文档下载为 Markdown 并打包为 zip。",
+  "author": "shangxueink",
+  "license": "MIT",
+  "match": [
+    "https://bot.q.qq.com/wiki/*"
+  ],
+  "icon": "https://www.google.com/s2/favicons?sz=64&domain=bot.q.qq.com",
+  "grant": "GM_addStyle",
+  "run-at": "document-end",
+  "homepageURL": "https://github.com/koakuuma/tampermonkey-scripts",
+  "supportURL": "https://github.com/koakuuma/tampermonkey-scripts/issues",
+  "prod": {
+    "downloadURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/qq-bot-docs-downloader.js",
+    "updateURL": "https://raw.githubusercontent.com/koakuuma/tampermonkey-scripts/refs/heads/main/dist/qq-bot-docs-downloader.js"
+  }
+}
